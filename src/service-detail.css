@@ -1,0 +1,437 @@
+/* 
+  Estilos para la Vista de Detalle de Servicio (Temas)
+*/
+
+.service-detail-page {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 160px);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary-light);
+}
+
+.breadcrumb-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: underline;
+  color: #0033a0;
+}
+
+.breadcrumb-separator {
+  color: var(--border-light);
+}
+
+.service-detail-header {
+  text-align: left;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.service-detail-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 85, 164, 0.1);
+  color: var(--primary-color);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode .service-detail-icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.service-detail-header-text h1 {
+  font-size: 2.5rem;
+  color: var(--text-primary-light);
+  margin: 0 0 10px 0;
+}
+
+.service-detail-header-text p {
+  color: var(--text-secondary-light);
+  font-size: 1.1rem;
+  margin: 0;
+  max-width: 700px;
+}
+
+/* Common Links Reset */
+.service-detail-page a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =========================================
+   Propuesta 1: Tarjetas "Bento" Estilo Carpeta
+   ========================================= */
+.tema-prop-1 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.folder-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  border-radius: 20px 20px 20px 0;
+  padding: 30px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+body.dark-mode .folder-card {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Folder tab effect */
+.folder-card::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -1px;
+  width: 40%;
+  height: 15px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  transition: all 0.3s;
+}
+
+body.dark-mode .folder-card::before {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.folder-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--primary-color);
+  box-shadow: 0 15px 30px rgba(0, 85, 164, 0.08);
+}
+
+.folder-card:hover::before {
+  border-color: var(--primary-color);
+}
+
+.folder-icon {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.folder-card h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary-light);
+  margin: 0 0 15px 0;
+  font-weight: 700;
+}
+
+.folder-card p {
+  color: var(--text-secondary-light);
+  font-size: 0.95rem;
+  margin: 0 0 25px 0;
+  flex-grow: 1;
+}
+
+.folder-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tramites-badge {
+  background: rgba(0, 85, 164, 0.1);
+  color: var(--primary-color);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+body.dark-mode .tramites-badge {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.folder-action {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: gap 0.2s;
+}
+
+.folder-card:hover .folder-action {
+  gap: 10px;
+}
+
+/* =========================================
+   Propuesta 2: Lista Moderna en Bloques
+   ========================================= */
+.tema-prop-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.block-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-light);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.block-row:hover {
+  background: rgba(0, 85, 164, 0.02);
+  border-color: var(--primary-color);
+  transform: translateX(5px);
+}
+
+body.dark-mode .block-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.block-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.block-icon {
+  background: var(--background-light);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+body.dark-mode .block-icon {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.block-row:hover .block-icon {
+  background: var(--primary-color);
+  color: white;
+}
+
+.block-info h3 {
+  margin: 0 0 4px 0;
+  color: var(--text-primary-light);
+  font-size: 1.15rem;
+}
+
+.block-info p {
+  margin: 0;
+  color: var(--text-secondary-light);
+  font-size: 0.9rem;
+}
+
+.block-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.block-badge {
+  background: var(--background-light);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.block-action {
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s;
+}
+
+.block-row:hover .block-action {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* =========================================
+   Propuesta 3: Tarjetas Flotantes Glow
+   ========================================= */
+.tema-prop-3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.glow-card {
+  flex: 1 1 calc(33.333% - 25px);
+  min-width: 280px;
+  background: var(--surface-light);
+  border-radius: 24px;
+  padding: 35px 25px;
+  position: relative;
+  transition: all 0.4s ease;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.glow-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(0,85,164,0.1), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: -1;
+}
+
+.glow-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 85, 164, 0.1);
+  border-color: rgba(0, 85, 164, 0.2);
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+.glow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.glow-icon {
+  color: var(--primary-color);
+  background: rgba(0, 85, 164, 0.08);
+  width: 55px;
+  height: 55px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+body.dark-mode .glow-icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.glow-card:hover .glow-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.glow-count {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-secondary-light);
+  opacity: 0.5;
+}
+
+.glow-card h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary-light);
+  margin: 0 0 10px 0;
+}
+
+.glow-card p {
+  color: var(--text-secondary-light);
+  font-size: 0.95rem;
+  margin: 0 0 25px 0;
+  flex-grow: 1;
+}
+
+.glow-action {
+  align-self: flex-start;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.glow-action::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transition: width 0.3s;
+}
+
+.glow-card:hover .glow-action::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .service-detail-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .block-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .block-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

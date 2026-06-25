@@ -1,0 +1,581 @@
+/* ==========================================================================
+   TRAMITE DETAIL STYLES - 3 PROPUESTAS
+   ========================================================================== */
+
+.tramite-detail-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.not-found {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.2rem;
+  color: var(--text-secondary-light);
+}
+
+/* ==========================================================================
+   PROPUESTA 1: Diseño Clásico (Referencia)
+   ========================================================================== */
+.proposal-1-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .proposal-1-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p1-main-content {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.p1-header h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.p1-desc {
+  font-size: 1.1rem;
+  color: var(--text-secondary-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.p1-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.p1-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--text-main-light);
+}
+
+.p1-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.p1-list li {
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed var(--border-light);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.p1-list li:last-child {
+  border-bottom: none;
+}
+
+.p1-step-number {
+  background: var(--bg-hover-light);
+  color: var(--primary-color);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.p1-sidebar {
+  position: sticky;
+  top: 6rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.p1-meta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.p1-meta-item:last-child {
+  border-bottom: none;
+}
+
+.p1-meta-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary-light);
+  font-size: 0.9rem;
+}
+
+.p1-meta-value {
+  font-weight: 600;
+  color: var(--text-main-light);
+}
+
+/* Related Procedures P1 */
+.p1-related-section {
+  margin-top: 2rem;
+}
+
+.p1-related-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-hover-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.p1-related-card:hover {
+  transform: translateX(5px);
+  background: var(--primary-color);
+  color: white;
+}
+
+.p1-related-card:hover .text-secondary-light {
+  color: rgba(255,255,255,0.8);
+}
+
+.p1-rel-icon {
+  color: var(--primary-color);
+  transition: color 0.2s;
+}
+
+.p1-related-card:hover .p1-rel-icon {
+  color: white;
+}
+
+
+/* ==========================================================================
+   PROPUESTA 2: Diseño Eficiencia (Tabs/Wizard)
+   ========================================================================== */
+.proposal-2-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.p2-header-card {
+  background: var(--primary-color);
+  color: white;
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.p2-header-card h1 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.p2-header-card p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  max-width: 600px;
+}
+
+.p2-quick-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  background: rgba(255,255,255,0.1);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+}
+
+.p2-info-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.p2-content-wrapper {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .p2-content-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p2-nav {
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.p2-nav-btn {
+  padding: 1rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary-light);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.p2-nav-btn:hover {
+  background: var(--bg-hover-light);
+  color: var(--text-main-light);
+}
+
+.p2-nav-btn.active {
+  border-left-color: var(--primary-color);
+  color: var(--primary-color);
+  background: var(--bg-hover-light);
+  font-weight: 600;
+}
+
+.p2-section-content {
+  background: var(--bg-card-light);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  animation: fadeIn 0.3s ease;
+}
+
+.p2-section-title {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--bg-hover-light);
+  color: var(--text-main-light);
+}
+
+.p2-requirement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-hover-light);
+  border-radius: var(--radius-md);
+}
+
+.p2-step-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.p2-step-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--border-light);
+  line-height: 1;
+}
+
+.p2-related-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .p2-related-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p2-related-item {
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--text-main-light);
+  transition: border-color 0.2s;
+}
+
+.p2-related-item:hover {
+  border-color: var(--primary-color);
+}
+
+
+/* ==========================================================================
+   PROPUESTA 3: Diseño Wow Factor (Glassmorphism / Bento)
+   ========================================================================== */
+.proposal-3-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.p3-hero {
+  position: relative;
+  padding: 4rem 2rem;
+  border-radius: 24px;
+  overflow: hidden;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #1a365d 100%);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Decorative blobs for hero */
+.p3-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: var(--accent-green);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+}
+
+.p3-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: #3b82f6; /* Lighter blue */
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+}
+
+.p3-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.p3-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.p3-hero-desc {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+.p3-hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.p3-stat-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.p3-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .p3-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .p3-bento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p3-bento-box {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  padding: 2rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.p3-bento-box:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.p3-bento-large {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .p3-bento-large {
+    grid-column: span 1;
+  }
+}
+
+.p3-bento-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+}
+
+.p3-bento-header h2 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.p3-step-item {
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.p3-step-item:last-child {
+  padding-bottom: 0;
+}
+
+.p3-step-item::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: var(--bg-hover-light);
+}
+
+.p3-step-item:last-child::before {
+  display: none;
+}
+
+.p3-step-icon {
+  width: 42px;
+  height: 42px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.p3-step-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.p3-step-content p {
+  color: var(--text-secondary-light);
+  margin: 0;
+}
+
+/* Glass Related Cards */
+.p3-related-scroll {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+}
+
+.p3-related-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.p3-related-card {
+  min-width: 280px;
+  background: linear-gradient(to bottom right, var(--bg-card-light), var(--bg-hover-light));
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.3s;
+}
+
+.p3-related-card:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.02);
+}
+
+.p3-related-card:hover .text-secondary-light {
+  color: rgba(255,255,255,0.8);
+}
+
+.p3-rel-arrow {
+  color: var(--primary-color);
+  transition: color 0.3s;
+}
+
+.p3-related-card:hover .p3-rel-arrow {
+  color: white;
+}
+
+.p3-related-card:hover .badge-pill {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}

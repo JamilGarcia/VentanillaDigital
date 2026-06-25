@@ -1,0 +1,107 @@
+/* Trust Badges */
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-badge-top {
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.badge-pill {
+  background: rgba(0, 85, 164, 0.1);
+  color: var(--primary-color);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(0, 85, 164, 0.2);
+}
+
+.hero-trust-badges {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary-light);
+}
+
+/* Metrics Section */
+.metrics-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 2rem;
+  margin-top: -2rem; /* Pull up slightly over hero if desired, or keep as is */
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.metric-card {
+  background: var(--surface-light);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px -10px rgba(0,0,0,0.1);
+}
+
+.metric-icon {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.metric-card.presencial .metric-icon {
+  color: var(--text-secondary-light);
+}
+
+.metric-info {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.metric-info h2 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1;
+  color: var(--text-primary-light);
+}
+
+.metric-info p {
+  font-weight: 700;
+  color: var(--text-secondary-light);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.metric-desc {
+  color: var(--text-secondary-light);
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
