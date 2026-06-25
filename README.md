@@ -1,6 +1,6 @@
-# Ventanilla Digital - Gobierno de Honduras 🇭🇳
+# Ventanilla Digital
 
-Este proyecto es un **prototipo** de la nueva **Ventanilla Digital** para el Gobierno de Honduras. 
+Este proyecto es un **prototipo** de la nueva **Ventanilla Digital**. 
 
 El objetivo principal de esta aplicación es ofrecer una plataforma gubernamental moderna que la población disfrute usar, superando los portales tradicionales. Está diseñada para transmitir **velocidad, confianza y eficiencia**, integrando principios de diseño UI/UX avanzados (como microinteracciones, *glassmorphism* y estéticas de *bento box*).
 
