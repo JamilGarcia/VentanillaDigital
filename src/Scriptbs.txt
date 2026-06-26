@@ -1,0 +1,362 @@
+-- Script completo de base de datos Ventanilla Digital
+-- Generado automáticamente a partir de mockData.js
+
+-- 0. BORRADO DE TABLAS (ORDEN INVERSO DE DEPENDENCIAS)
+IF OBJECT_ID('tramite_relacionados', 'U') IS NOT NULL DROP TABLE tramite_relacionados;
+IF OBJECT_ID('tramite_plantillas', 'U') IS NOT NULL DROP TABLE tramite_plantillas;
+IF OBJECT_ID('tramite_lugares', 'U') IS NOT NULL DROP TABLE tramite_lugares;
+IF OBJECT_ID('tramite_pasos', 'U') IS NOT NULL DROP TABLE tramite_pasos;
+IF OBJECT_ID('tramite_requisitos', 'U') IS NOT NULL DROP TABLE tramite_requisitos;
+IF OBJECT_ID('tramites', 'U') IS NOT NULL DROP TABLE tramites;
+IF OBJECT_ID('instituciones', 'U') IS NOT NULL DROP TABLE instituciones;
+IF OBJECT_ID('categorias', 'U') IS NOT NULL DROP TABLE categorias;
+
+-- 1. CREACIÓN DE TABLAS
+
+-- Tabla de Categorías
+CREATE TABLE categorias (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    icon VARCHAR(50)
+);
+
+-- Tabla de Instituciones
+CREATE TABLE instituciones (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    type VARCHAR(100),
+    total INT DEFAULT 0,
+    online INT DEFAULT 0,
+    presencial INT DEFAULT 0
+);
+
+-- Tabla de Trámites Principales
+CREATE TABLE tramites (
+    id VARCHAR(10) PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    categoria_id VARCHAR(10),
+    institucion_id VARCHAR(10),
+    tiempo_estimado VARCHAR(50),
+    costo VARCHAR(50),
+    modalidad VARCHAR(50),
+    popular BIT DEFAULT 0,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id),
+    FOREIGN KEY (institucion_id) REFERENCES instituciones(id)
+);
+
+-- Tabla para Requisitos 
+CREATE TABLE tramite_requisitos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tramite_id VARCHAR(10),
+    texto TEXT NOT NULL,
+    ejemplo_url VARCHAR(255),
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id)
+);
+
+-- Tabla para Pasos
+CREATE TABLE tramite_pasos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tramite_id VARCHAR(10),
+    orden INT,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    dependencia VARCHAR(150),
+    modalidad VARCHAR(50),
+    tiempo VARCHAR(50),
+    requisito VARCHAR(255),
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id)
+);
+
+-- Tabla para Lugares (NUEVA)
+CREATE TABLE tramite_lugares (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tramite_id VARCHAR(10),
+    nombre VARCHAR(150) NOT NULL,
+    ciudad VARCHAR(100),
+    direccion TEXT,
+    horario VARCHAR(100),
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id)
+);
+
+-- Tabla para Plantillas (NUEVA)
+CREATE TABLE tramite_plantillas (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tramite_id VARCHAR(10),
+    nombre VARCHAR(150) NOT NULL,
+    formato VARCHAR(50),
+    tamano VARCHAR(50),
+    url VARCHAR(255),
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id)
+);
+
+-- Tabla para Trámites Relacionados (NUEVA)
+CREATE TABLE tramite_relacionados (
+    tramite_id VARCHAR(10),
+    tramite_relacionado_id VARCHAR(10),
+    PRIMARY KEY(tramite_id, tramite_relacionado_id),
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id),
+    FOREIGN KEY (tramite_relacionado_id) REFERENCES tramites(id)
+);
+
+-- 2. INSERCIÓN DE DATOS
+
+-- Inserción de Categorías
+INSERT INTO categorias (id, name, icon) VALUES ('1', 'Salud y Seguridad Social', 'HeartPulse');
+INSERT INTO categorias (id, name, icon) VALUES ('2', 'Educación y Cultura', 'GraduationCap');
+INSERT INTO categorias (id, name, icon) VALUES ('3', 'Impuestos y Finanzas', 'CreditCard');
+INSERT INTO categorias (id, name, icon) VALUES ('4', 'Identidad y Ciudadanía', 'Contact');
+INSERT INTO categorias (id, name, icon) VALUES ('5', 'Empresas y Negocios', 'Building2');
+INSERT INTO categorias (id, name, icon) VALUES ('6', 'Vivienda y Propiedad', 'Home');
+INSERT INTO categorias (id, name, icon) VALUES ('7', 'Transporte y Vehículos', 'Car');
+INSERT INTO categorias (id, name, icon) VALUES ('8', 'Medio Ambiente', 'Leaf');
+
+-- Inserción de Instituciones
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i1', 'Instituto Nacional de Migración', 'Institución Gubernamental', 4, 3, 1);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i2', 'Poder Judicial', 'Poder del Estado', 10, 8, 2);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i3', 'Secretaría de Desarrollo Económico', 'Institución Gubernamental', 15, 15, 0);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i4', 'Alcaldía Municipal del Distrito Central', 'Gobierno Local', 25, 10, 15);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i5', 'Secretaría de Educación', 'Institución Gubernamental', 8, 4, 4);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i6', 'Instituto Hondureño de Seguridad Social', 'Institución Descentralizada', 12, 12, 0);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i7', 'Dirección Nacional de Vialidad y Transporte', 'Institución Gubernamental', 6, 3, 3);
+INSERT INTO instituciones (id, name, type, total, online, presencial) VALUES ('i8', 'Secretaría de Recursos Naturales y Ambiente', 'Institución Gubernamental', 5, 2, 3);
+
+-- Inserción de Trámites
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t1', 'Renovación de Pasaporte Electrónico', 'El pasaporte electrónico hondureño es el documento oficial de viaje que identifica a los ciudadanos en el extranjero. Contiene un chip integrado con datos biométricos y biográficos, garantizando altos estándares de seguridad internacional. Este trámite permite la renovación por vencimiento, robo o extravío, asegurando que pueda viajar sin contratiempos.', '4', 'i1', '5 días hábiles', 'L. 1,250.00 (5 años) / L. 1,875.00 (10 años)', 'Híbrido', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t2', 'Emisión de Constancia de Antecedentes Penales', 'La constancia de antecedentes penales es un documento oficial expedido por el Poder Judicial que certifica si un ciudadano tiene o no historial delictivo registrado en los juzgados y tribunales de la República. Es frecuentemente solicitada para aplicar a empleos formales, obtención de becas, solicitud de visas o matrimonio.', '4', 'i2', '24 a 48 horas', 'L. 150.00 (Empleo) / L. 200.00 (Estudios/Visa)', 'Virtual', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t3', 'Constitución e Inscripción de Sociedad Mercantil', 'Trámite integral para formalizar legalmente una empresa en el territorio nacional. A través del portal "Mi Empresa en Línea", los emprendedores pueden constituir Sociedades de Responsabilidad Limitada (S. de R.L.) u otras figuras mercantiles de manera acelerada, obteniendo automáticamente el Registro Tributario Nacional (RTN) y el Permiso de Operación provisional.', '5', 'i3', '10 a 15 días hábiles', 'Variable (Aprox. L. 3,500 - L. 5,000 en timbres y registros)', 'Virtual', 0);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t4', 'Declaración y Pago de Bienes Inmuebles', 'Cumplimiento de la obligación tributaria municipal correspondiente al Impuesto sobre Bienes Inmuebles. Este impuesto recae sobre el valor patrimonial de los terrenos y edificaciones, y los fondos recaudados se invierten en infraestructura y servicios de la ciudad. El sistema permite la consulta de saldos, generación de planes de pago y liquidación en línea.', '3', 'i4', 'Inmediato', 'Según Avalúo Catastral (Varía anualmente)', 'Virtual', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t5', 'Aplicación al Programa de Becas Solidarias', 'El Programa de Becas Solidarias busca apoyar a estudiantes de escasos recursos y con excelencia académica para que continúen y culminen sus estudios de Educación Superior en universidades públicas y privadas. Los beneficiarios reciben un estipendio mensual que ayuda a cubrir gastos de transporte, alimentación y material didáctico.', '2', 'i5', '45 a 60 días (Proceso completo)', 'Totalmente Gratuito', 'Virtual', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t6', 'Afiliación e Inscripción de Beneficiarios al Seguro Social (IHSS)', 'Garantice la cobertura médica, protección contra riesgos laborales y acceso a pensiones mediante la afiliación formal al Instituto Hondureño de Seguridad Social. Este trámite permite que un trabajador directo (ya ingresado en planilla patronal) solicite su carnet, o bien, inscriba a sus dependientes (esposa/o e hijos menores) para que gocen de los beneficios médicos.', '1', 'i6', '1 a 3 días', 'Gratuito', 'Híbrido', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t7', 'Renovación de Licencia de Conducir', 'La licencia de conducir es el documento oficial que avala la aptitud y capacidad de un individuo para operar vehículos automotores. La renovación debe realizarse antes de su vencimiento. El proceso actual es híbrido, lo que agiliza significativamente el trámite al permitir pagar y enviar documentos en línea, reduciendo el tiempo de presencia física.', '7', 'i7', '1 a 2 horas (Dependiendo de la cita médica)', 'L. 600.00 (Liviana - 5 años) / L. 1,000.00 (Pesada)', 'Híbrido', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t8', 'Emisión de Licencia Ambiental', 'La Licencia Ambiental es un instrumento preventivo y de control expedido por la SERNA, obligatorio para cualquier proyecto, instalación o actividad (pública o privada) que pueda causar riesgo o daño ambiental, o alteración en los recursos naturales. El trámite clasifica los proyectos en Categorías (1, 2, 3 y 4) dependiendo del grado de impacto potencial.', '8', 'i8', '45 a 120 días (Según la categoría del proyecto)', 'L. 5,000.00 hasta L. 150,000.00 (Acorde a la inversión)', 'Presencial', 0);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t9', 'Inscripción de Nacimiento (RNP)', 'Acto formal y legal mediante el cual se registra la existencia de una nueva persona natural, otorgándole un nombre, nacionalidad y filiación. Este trámite es un derecho humano fundamental y debe realizarse, preferiblemente, en los primeros 6 meses tras el alumbramiento para evitar el proceso de "Inscripción Tardía".', '4', 'i4', '30 a 45 minutos', 'Gratuito (Derecho Constitucional)', 'Presencial', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t10', 'Permiso de Operación de Negocios (Alcaldía)', 'El Permiso de Operación es el documento que emite el gobierno local (Alcaldía) que autoriza el funcionamiento de un establecimiento comercial, industrial o de servicios dentro del término municipal. Debe renovarse en el mes de enero de cada año. El trámite valida que el negocio cumpla con normativas de zonificación, seguridad y salubridad.', '5', 'i4', '10 a 20 días hábiles', 'Depende de los Ingresos Brutos declarados o proyectados', 'Virtual', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t11', 'Auténtica de Documentos de Educación Secundaria', 'Trámite indispensable para certificar la validez y originalidad de los documentos académicos emitidos por institutos de nivel medio (públicos o privados). La Auténtica es el paso previo requerido antes de presentar el certificado de estudios o diploma en universidades nacionales, colegios profesionales, o enviarlos a la Secretaría de Relaciones Exteriores (Cancillería) para apostillado internacional.', '2', 'i5', '3 a 5 días hábiles', 'L. 50.00 por documento', 'Presencial', 0);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t12', 'Traspaso de Vehículo Automotor', 'Procedimiento registral que formaliza el cambio de titularidad de un vehículo. Actualiza el historial del automotor en la base de datos del Instituto de la Propiedad (IP) para efectos legales, civiles y fiscales (pago de matrícula de vehículos). Es obligatorio para liberar de responsabilidad por accidentes o multas al vendedor.', '7', 'i7', '24 a 48 horas (Si no hay incidencias legales)', 'Aprox. L. 3,500.00 (Incluye gastos registrales, notario e impuestos)', 'Presencial', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t13', 'Aviso de Cambio de Domicilio Fiscal (SAR)', 'Gestión mediante la cual las Personas Naturales o Jurídicas notifican formalmente al Servicio de Administración de Rentas (SAR) el cambio de la dirección física donde realizan su actividad comercial o administrativa. Esto es fundamental para recibir notificaciones legales, auditorías y mantener el RTN actualizado y evitar multas formales.', '3', 'i3', 'Inmediato (Con actualización instantánea del RTN)', 'Gratuito', 'Virtual', 0);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t14', 'Solicitud de Pensión por Vejez (Jubilación IHSS)', 'Es el beneficio económico mensual y vitalicio que se otorga al asegurado(a) del Instituto Hondureño de Seguridad Social que ha cumplido con los requisitos de edad (65 años para hombres y 60 años para mujeres) y que ha cotizado el número mínimo de meses requeridos por la ley al Régimen de Invalidez, Vejez y Muerte (IVM).', '1', 'i6', '60 a 90 días (Fase de cálculo y auditoría)', 'Trámite Gratuito', 'Híbrido', 1);
+INSERT INTO tramites (id, titulo, descripcion, categoria_id, institucion_id, tiempo_estimado, costo, modalidad, popular) VALUES ('t15', 'Constancia de Solvencia Municipal', 'La Solvencia Municipal es un documento oficial y de vital importancia que certifica que un ciudadano o empresa se encuentra al día ("solvente") con el pago de todos los impuestos, tasas, multas y contribuciones correspondientes a la Alcaldía (Bienes inmuebles, impuesto vecinal, servicios públicos, etc.). Es requerida para casi cualquier trámite notarial, traspaso de propiedades o contratos con el Estado.', '3', 'i4', 'Inmediato', 'L. 100.00 (Empresa) / L. 50.00 (Persona Natural)', 'Virtual', 1);
+
+-- Inserción de Requisitos
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t1', 'Documento Nacional de Identificación (DNI) vigente en formato original y fotocopia.', 'https://images.unsplash.com/photo-1633265486064-086b219458ce?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t1', 'Recibo de pago original emitido por la institución bancaria autorizada (TGR-1).', 'https://images.unsplash.com/photo-1607893378714-007fd47c8719?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t1', 'Pasaporte anterior (indispensable si se trata de renovación por vencimiento).', 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t1', 'Constancia de denuncia interpuesta en la DPI (Únicamente en caso de robo o extravío).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t2', 'Copia clara del Documento Nacional de Identificación (DNI), derecho y revés.', 'https://images.unsplash.com/photo-1633265486064-086b219458ce?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t2', 'Recibo de pago cancelado en banco (Generado previamente en línea).', 'https://images.unsplash.com/photo-1607893378714-007fd47c8719?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t2', 'En caso de menores (de 18 a 21 años), presentar copia de acta de nacimiento.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t3', 'DNI de todos los socios fundadores y comisario.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t3', 'Borrador del Acta Constitutiva o Estatutos Sociales elaborados por un Notario Público.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t3', 'Comprobante de depósito de capital inicial (Mínimo requerido según el tipo de sociedad).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t3', 'Recibo de servicios públicos que compruebe la dirección fiscal de la empresa.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t4', 'Tener a mano la Clave Catastral de la propiedad (Código de 14 dígitos).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t4', 'No estar en estado de "Bloqueo por mora judicial" (Debe resolverse presencialmente).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t4', 'Tarjeta de crédito o débito si desea efectuar el pago electrónico.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t5', 'Certificado de estudios del último periodo académico con índice no menor a 80%.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t5', 'Constancia de matrícula extendida por la Universidad correspondiente.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t5', 'DNI del estudiante (O partida de nacimiento y DNI de los padres si es menor).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t5', 'Fotografía tamaño carnet reciente.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t5', 'Recibo de servicios públicos del domicilio actual (Agua o Energía Eléctrica).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t6', 'Documento Nacional de Identificación (DNI) del trabajador en original y copia.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t6', 'Constancia de trabajo reciente (No mayor a 30 días de emisión), firmada y sellada por RRHH.', 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t6', 'Para afiliar esposa/o: Acta de matrimonio original emitida por el RNP.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t6', 'Para afiliar hijos: Certificado de nacimiento original de cada menor.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t7', 'Certificados médicos vigentes (Examen Físico, Visual y Psicológico) extendidos por la Cruz Roja u hospitales certificados.', 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t7', 'Recibo de pago original del banco (Según categoría y años de vigencia).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t7', 'Licencia de conducir vencida o próxima a vencer.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t7', 'DNI vigente original y fotocopia.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t8', 'Estudio de Impacto Ambiental (EsIA) elaborado por un prestador de servicios ambientales certificado (Solo para cat. 3 y 4).', 'https://images.unsplash.com/photo-1532153955177-f59af40d6472?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t8', 'Resumen Ejecutivo del Proyecto y Planos de Localización con coordenadas UTM.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t8', 'Constancia de Compatibilidad de Uso de Suelo emitida por la Alcaldía Municipal.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t8', 'RTN de la Empresa y Escritura de Constitución.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t8', 'Publicación de Aviso en el diario de mayor circulación (Consulta Pública).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t9', 'Reporte de Nacimiento original emitido por el hospital o centro de salud, firmado y sellado por el médico.', 'https://images.unsplash.com/photo-1555252117-426573f3b609?q=80&w=600&auto=format&fit=crop');
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t9', 'Documentos Nacionales de Identificación (DNI) originales de ambos padres.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t9', 'Si los padres están casados legalmente, presentar Acta de Matrimonio.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t9', 'Presencia física obligatoria de al menos uno de los padres (Si no están casados, el padre debe presentarse para el reconocimiento).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t10', 'Declaración Jurada de Ingresos Brutos del año anterior (O proyección si es nuevo).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t10', 'Copia de la Escritura Pública de Constitución e Inscripción en el Registro Mercantil.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t10', 'Constancia de Solvencia Municipal vigente de la Empresa y Representante Legal.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t10', 'Copia del Contrato de Arrendamiento del local comercial o título de propiedad.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t10', 'Permiso o Constancia del Cuerpo de Bomberos de Honduras.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t11', 'Certificación de Estudios original, debidamente firmada por el Director y Secretario del Instituto.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t11', 'Título de Educación Media original (si aplica).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t11', 'Recibo de la Tasa General de la República (TGR-1) pagado a favor de la Secretaría de Educación.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t11', 'Fotocopia del DNI del estudiante.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t12', 'Testimonio de Escritura Pública o Auténtica de firmas del Contrato de Compra-Venta (Realizado por Notario Público).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t12', 'Boleta de Revisión Original (Vigente o con las multas pagadas).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t12', 'Constancia de Inspección Física y Revisión de Chasis y Motor emitida por la Dirección Policial de Investigaciones (DPI).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t12', 'Recibo de pago de Tradición de Dominio (Pago en Banco).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t12', 'Fotocopias de DNI y RTN de Comprador y Vendedor.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t13', 'Tener Contrato de Adhesión vigente y acceso a la Oficina Virtual del SAR.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t13', 'Documento soporte del nuevo domicilio (Ej. Recibo de ENEE, SANAA o Hondutel a nombre de la empresa, o contrato de alquiler notariado).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t13', 'Datos precisos: Departamento, Municipio, Colonia/Barrio, Calle, Avenida y punto de referencia.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t14', 'Haber cumplido 60 años (mujeres) o 65 años (hombres).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t14', 'Tener acreditadas un mínimo de 180 cotizaciones mensuales (15 años) debidamente pagadas.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t14', 'Copia del DNI y Certificación de Nacimiento original reciente.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t14', 'Constancia de retiro definitivo de labores (Cese de la empresa).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t14', 'Cuenta Bancaria a nombre del solicitante (Constancia del Banco).', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t15', 'DNI o RTN del ciudadano o empresa.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t15', 'Haber pagado previamente el Impuesto Personal (Vecinal) o el Impuesto de Industria y Comercio.', NULL);
+INSERT INTO tramite_requisitos (tramite_id, texto, ejemplo_url) VALUES ('t15', 'No poseer deudas arrastradas de Bienes Inmuebles, agua o multas de tránsito municipales asociadas al DNI.', NULL);
+
+-- Inserción de Pasos
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t1', 1, 'Generación y Pago de Cita', 'Compre su cita en las ventanillas de Banco Atlántida, Banpais o Ficohsa a nivel nacional, presentando su DNI original.', 'Agencias Bancarias', 'Presencial', '10 min', 'DNI y Efectivo/Tarjeta');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t1', 2, 'Programación de Cita en Línea', 'Ingrese al portal del INM con el número de recibo bancario y seleccione la fecha/hora de atención según disponibilidad.', 'Portal INM (Migración)', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t1', 3, 'Captura de Datos Biométricos', 'Preséntese en las oficinas de migración 15 minutos antes de su cita para la captura de fotografía, huellas y firma electrónica.', 'Área de Captura INM', 'Presencial', '30 min', 'Recibo y Pasaporte Anterior');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t1', 4, 'Impresión y Entrega', 'Espere en la sala de espera hasta que su pasaporte electrónico sea impreso y entregado en ventanilla.', 'Ventanilla de Entrega INM', 'Presencial', '1 a 3 horas', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t2', 1, 'Generar Recibo de Pago', 'Acceda al portal institucional y genere el recibo de pago indicando el uso de la constancia.', 'Portal Poder Judicial', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t2', 2, 'Realizar el Pago', 'Pague el importe exacto en cualquier sucursal de Banco Atlántida.', 'Banco Atlántida', 'Presencial', '10 min', 'Recibo Impreso');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t2', 3, 'Ingreso de Solicitud Online', 'Complete el formulario en línea adjuntando la fotografía del DNI y del recibo bancario sellado.', 'Unidad de Antecedentes', 'Virtual', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t2', 4, 'Validación y Descarga', 'Recibirá una notificación por correo electrónico. Podrá descargar el documento PDF certificado con firma electrónica y código QR.', 'Sistema Automático', 'Virtual', '24 horas', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t3', 1, 'Creación de Usuario', 'Registro del Representante Legal en el portal "Mi Empresa en Línea".', 'Portal Mi Empresa', 'Virtual', '15 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t3', 2, 'Llenado de Formulario Único', 'Ingreso de datos de la empresa: Razón social, finalidad, capital, socios y dirección fiscal.', 'Ventanilla Única (CCIT)', 'Virtual', '1 hora', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t3', 3, 'Firma y Carga de Escritura', 'Subir la Escritura Pública escaneada y firmada por el Notario (Documento protocolizado).', 'Registro Mercantil', 'Virtual', '10 min', 'Escritura Pública');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t3', 4, 'Pago de Tasas Registrales', 'Generación del recibo unificado y pago en línea de los derechos de inscripción registral.', 'Sistema de Pagos', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t3', 5, 'Emisión de Certificados', 'Tras la revisión legal, se emite electrónicamente la Matrícula de Comercio, RTN y Constancia de Inscripción.', 'Registro Mercantil / SAR', 'Virtual', '10 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t4', 1, 'Validación de Identidad', 'Ingrese el DNI del propietario o el RTN en el portal de servicios tributarios.', 'Portal Tributario AMDC', 'Virtual', '2 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t4', 2, 'Consulta de Clave Catastral', 'Seleccione la propiedad o ingrese la clave catastral para visualizar el estado de cuenta actualizado.', 'Gerencia de Catastro', 'Virtual', '1 min', 'Clave Catastral');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t4', 3, 'Selección de Modalidad de Pago', 'Elija si desea pagar el año completo (con descuento por pronto pago) o seleccionar pago en cuotas.', 'Tesorería Municipal', 'Virtual', '3 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t4', 4, 'Procesamiento de Pago', 'Introduzca los datos de su tarjeta para efectuar el débito, o imprima el recibo para pago en banco.', 'Pasarela de Pago', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t4', 5, 'Recibo y Solvencia', 'Descargue el comprobante de pago oficial y la Constancia de Solvencia Inmueble electrónica.', 'Sistema Automático', 'Virtual', 'Inmediato', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t5', 1, 'Creación de Perfil', 'Regístrese en el portal de la Secretaría de Educación con su correo electrónico y DNI.', 'Plataforma Educativa', 'Virtual', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t5', 2, 'Carga de Documentación', 'Escanee y suba todos los requisitos documentales solicitados en formato PDF legible.', 'Sistema de Recepción', 'Virtual', '20 min', 'Constancias Académicas');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t5', 3, 'Llenado de Estudio Socioeconómico', 'Complete el cuestionario detallado sobre la conformación de su hogar, ingresos y vivienda.', 'Trabajo Social', 'Virtual', '45 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t5', 4, 'Evaluación y Entrevista', 'El comité revisará la información. Podría ser contactado para una breve entrevista telefónica.', 'Comité de Becas', 'Virtual', '15-30 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t5', 5, 'Publicación de Resultados', 'Consulte el estado de su solicitud. Si es aprobado, deberá firmar el acta de compromiso.', 'Secretaría General', 'Presencial', '1 día', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t6', 1, 'Revisión en el Portal', 'Consulte en línea si su patrono ya realizó el reporte de ingreso (alta) a la base de datos del IHSS.', 'Portal IHSS', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t6', 2, 'Asistencia a la Agencia', 'Preséntese en las oficinas de afiliación con los documentos originales requeridos.', 'Área de Afiliación', 'Presencial', '45 min', 'Constancia de Trabajo');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t6', 3, 'Ingreso de Beneficiarios', 'Entregue las actas de matrimonio/nacimiento al agente para vincular a su núcleo familiar.', 'Ventanilla de Dependientes', 'Presencial', '15 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t6', 4, 'Emisión de Carnet Electrónico', 'Se tomará fotografía y huella dactilar. Recibirá su carnet de afiliado de manera inmediata.', 'Emisión de Carnets', 'Presencial', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t7', 1, 'Realizar Exámenes Médicos', 'Acuda a la Cruz Roja Hondureña o clínicas autorizadas para someterse a la evaluación integral.', 'Cruz Roja / Clínicas', 'Presencial', '45 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t7', 2, 'Pago en Institución Bancaria', 'Pague el derecho de renovación de licencia indicando el tipo (Liviana, Pesada, Motocicleta) y la duración.', 'Bancos Autorizados', 'Presencial', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t7', 3, 'Solicitud en el Sistema', 'A través de la App de Tránsito o la Web, ingrese su perfil, suba las fotografías de sus recibos y agende cita.', 'Plataforma DNVT', 'Virtual', '15 min', 'Documentos Escaneados');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t7', 4, 'Validación Presencial e Impresión', 'Asista a la DNVT el día de su cita para una rápida validación facial e impresión física de la licencia.', 'Tránsito (DNVT)', 'Presencial', '20 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t8', 1, 'Ingreso del Expediente', 'Presentación física del formulario SINEA, el estudio técnico completo y los mapas de soporte en ventanilla.', 'Ventanilla SINEA (SERNA)', 'Presencial', '1 a 2 horas', 'Expediente Físico y Digital');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t8', 2, 'Evaluación Técnica DECA', 'Los ingenieros ambientales evalúan los riesgos de contaminación de suelo, agua, aire y flora/fauna.', 'Dirección de Evaluación y Control (DECA)', 'Interno', '15-40 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t8', 3, 'Inspección de Campo Conjunta', 'Visita presencial de técnicos de la SERNA y representantes del proyecto al polígono de construcción/operación.', 'Unidad de Supervisión', 'Presencial', '1 día (Variable)', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t8', 4, 'Dictamen y Contrato de Medidas', 'Firma del Contrato de Medidas de Mitigación (obligaciones ambientales a cumplir durante la operación).', 'Secretaría General SERNA', 'Presencial', '10 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t8', 5, 'Entrega de Licencia', 'Emisión de la resolución final y entrega del pergamino de la Licencia Ambiental.', 'Despacho Ministerial', 'Presencial', '5 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t9', 1, 'Recepción y Verificación', 'Entregar la constancia del hospital y los DNI al Registrador Civil, quien verificará los datos de filiación en el sistema.', 'Ventanilla de Registros RNP', 'Presencial', '10 min', 'Constancia Médica');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t9', 2, 'Digitación del Acta', 'El funcionario transcribe los datos del recién nacido, fecha, lugar, y asigna el Tomo, Folio y el nuevo número de identidad.', 'Registrador Civil', 'Interno', '15 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t9', 3, 'Lectura y Firma del Acta', 'Los padres leen el documento impreso en el libro matriz para confirmar que no existan errores ortográficos. Posteriormente, estampan su firma y huella.', 'Libros de Registro RNP', 'Presencial', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t9', 4, 'Emisión de Certificado', 'Se le entrega a los padres el primer Certificado (Acta) de Nacimiento original de manera gratuita.', 'Emisión de Certificados', 'Presencial', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t10', 1, 'Ingreso al Sistema Tributario', 'Acceder al portal AER (Atención Electrónica de Rentas) y seleccionar la opción "Permiso de Operación / Declaración Jurada".', 'Portal AER - AMDC', 'Virtual', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t10', 2, 'Llenado de Declaración Jurada', 'Ingresar los montos de ingresos brutos obtenidos en el ejercicio fiscal anterior. El sistema calculará el impuesto a pagar.', 'Sistema Tributario', 'Virtual', '20 min', 'Estados Financieros');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t10', 3, 'Pago de Impuestos y Tasas', 'Generar el estado de cuenta y efectuar el pago en la pasarela bancaria o sucursal. Incluye tasa de bomberos, recolección de basura e impuesto de industria y comercio.', 'Bancos / Tesorería', 'Híbrido', '15 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t10', 4, 'Validaciones de Seguridad y Salud', 'Para restaurantes o fábricas, se solicitará evidencia de inspección sanitaria. La Alcaldía verificará compatibilidad de uso de suelo.', 'Control de Salud y Ambiente', 'Interno', '7 a 15 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t10', 5, 'Descarga del Permiso Electrónico', 'Una vez auditado el pago y aprobados los permisos, podrá descargar el Permiso de Operación con firma digital y código QR, que debe exhibirse en el local.', 'Control de Ingresos', 'Virtual', 'Inmediato', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t11', 1, 'Validación en la Dirección Departamental', 'Si el instituto es privado, el documento debe llevar primero el visto bueno de la Dirección Departamental correspondiente.', 'Dirección Departamental', 'Presencial', '1 a 2 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t11', 2, 'Pago de Tasa TGR', 'Genere y pague el recibo TGR-1 (Rubro Auténticas) en cualquier agencia bancaria.', 'Bancos / SEFIN', 'Presencial', '15 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t11', 3, 'Entrega de Documentos', 'Presente los documentos originales y el recibo TGR en la ventanilla de Archivo y Auténticas de la Secretaría de Educación.', 'Archivo y Auténticas', 'Presencial', '20 min', 'Documentos Originales');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t11', 4, 'Verificación de Firmas', 'El personal coteja las firmas de los directores con su base de datos para asegurar que no hay falsificación.', 'Secretaría General', 'Interno', '2 a 3 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t11', 5, 'Devolución de Documentos Autenticados', 'Retire sus documentos, los cuales ahora tendrán un sello de auténtica y firma de la autoridad ministerial en el reverso.', 'Ventanilla de Entrega', 'Presencial', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t12', 1, 'Revisión Física DPI', 'Lleve el vehículo a las oficinas de la DPI para que un agente certifique que el número de chasis y motor no están adulterados y no tiene reporte de robo.', 'DPI - Robo de Vehículos', 'Presencial', '2 horas', 'Vehículo Físico');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t12', 2, 'Formalización del Contrato', 'El abogado Notario redacta y autentica el contrato de compra-venta, asegurando la voluntad de ambas partes.', 'Despacho Legal / Notariado', 'Presencial', '1 hora', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t12', 3, 'Pago de Tasas Registrales', 'Llenar formulario RV-01 y pagar en el banco el impuesto de Tradición de Dominio (2% del valor del vehículo) y emisión de certificado.', 'Bancos Autorizados', 'Presencial', '20 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t12', 4, 'Presentación del Expediente al IP', 'Lleve todo el expediente armado a la ventanilla del Registro Vehicular del IP para su calificación registral.', 'Instituto de la Propiedad (IP)', 'Presencial', '1 hora', 'Expediente Completo');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t12', 5, 'Emisión de Nueva Boleta de Revisión', 'Una vez procesado, se le entregará la nueva boleta de revisión donde el comprador ya figura como propietario actual.', 'Registro Vehicular', 'Presencial', '24 horas', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t13', 1, 'Ingreso a Oficina Virtual', 'Inicie sesión en el portal DEI/SAR en línea con su RTN y contraseña tributaria.', 'Oficina Virtual SAR', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t13', 2, 'Formulario de Modificación de Datos', 'Navegue al apartado de Registro y seleccione "Modificación de Datos". Actualice los campos de Domicilio Principal.', 'Módulo de Registro', 'Virtual', '10 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t13', 3, 'Carga de Documento de Soporte', 'Anexe en formato PDF el recibo de servicio público o contrato de arrendamiento que valide la nueva dirección física.', 'Sistema Documental', 'Virtual', '5 min', 'Soporte Escaneado');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t13', 4, 'Generación de Acuse y Nuevo RTN', 'Firme electrónicamente el formulario. El sistema generará un Acuse de Recibo y podrá imprimir la constancia de su RTN con el nuevo domicilio.', 'Sistema SAR', 'Virtual', 'Inmediato', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t14', 1, 'Estudio de Cuenta Individual', 'Previo al retiro, solicite un Estado de Cuenta en línea para confirmar que cumple con el conteo de 180 cotizaciones. Si hay inconsistencias, debe solicitar investigación.', 'Portal IHSS (Cuenta IVM)', 'Virtual', '30 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t14', 2, 'Presentación de la Solicitud', 'Acuda al departamento de Pensiones IVM con el formulario de solicitud firmado y todos los documentos soporte (certificados y constancia del banco).', 'Departamento Pensiones IVM', 'Presencial', '1 hora', 'Formularios Completos');
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t14', 3, 'Auditoría y Cálculo Actuarial', 'El expediente pasa al área de auditoría, donde se verifica que el patrono realmente pagó las cuotas y se calcula el monto base de la pensión según el promedio salarial.', 'Unidad de Cálculo y Auditoría', 'Interno', '30 a 60 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t14', 4, 'Resolución y Emisión de Dictamen', 'La comisión técnica aprueba la resolución legal que otorga el derecho a la pensión. Se cita al adulto mayor para notificárselo.', 'Dirección Médica y Legal', 'Presencial', '15 días', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t14', 5, 'Primer Pago y Supervivencia', 'La pensión se depositará mensualmente. Recuerde realizar el trámite de Fe de Vida o Supervivencia cada 6 meses.', 'Bancos / IHSS', 'Virtual', 'Continuo', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t15', 1, 'Verificación de Estado de Cuenta', 'Ingrese al portal tributario con su DNI y consulte su estado de cuenta para asegurarse de que el saldo esté en 0.00.', 'Portal AER - AMDC', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t15', 2, 'Generación del Cobro de Constancia', 'Seleccione "Emitir Solvencia" en el menú. El sistema creará un recibo por el valor del certificado (Ej. L. 100).', 'Módulo de Solvencias', 'Virtual', '2 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t15', 3, 'Pago en Línea', 'Pague el costo de la constancia mediante tarjeta de crédito/débito o en su banca en línea (Pago de Servicios Públicos).', 'Pasarela de Pagos', 'Virtual', '5 min', NULL);
+INSERT INTO tramite_pasos (tramite_id, orden, titulo, descripcion, dependencia, modalidad, tiempo, requisito) VALUES ('t15', 4, 'Descarga Inmediata', 'El sistema validará el pago y generará un documento PDF con firma digital y un código QR verificable, con una vigencia de 3 a 6 meses.', 'Sistema Automático AMDC', 'Virtual', 'Inmediato', NULL);
+
+-- Inserción de Lugares
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t1', 'INM Centro Cívico Gubernamental', 'Tegucigalpa', 'Bulevar Juan Pablo II, Edificio Torre 1, Primer Nivel.', 'Lunes a Viernes: 7:00 AM - 5:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t1', 'INM Oficina Regional Norte', 'San Pedro Sula', 'Barrio El Centro, 1 y 2 Calle, 3 Avenida.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t1', 'INM La Ceiba', 'La Ceiba', 'Edificio de Gobernación Departamental, Barrio El Centro.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t2', 'Unidad de Antecedentes - Corte Suprema', 'Tegucigalpa', 'Bulevar Kuwait, contiguo a la Secretaría de Relaciones Exteriores.', 'Lunes a Viernes: 7:30 AM - 4:00 PM (Solo casos excepcionales)');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t5', 'Secretaría de Educación - Dirección de Programas', 'Tegucigalpa', 'Centro Cívico Gubernamental, Torre 1, Piso 5.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t6', 'Hospital de Especialidades IHSS (La Granja)', 'Tegucigalpa', 'Barrio La Granja, contiguo a Juzgados Laborales.', 'Lunes a Viernes: 7:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t6', 'Hospital Regional del Norte', 'San Pedro Sula', 'Boulevard del Norte, entrada a Colonia FESITRANH.', 'Lunes a Viernes: 7:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t7', 'Centro de Capacitación y Evaluación DNVT', 'Tegucigalpa', 'Aldea Las Casitas, frente a Complejo de la Policía Militar.', 'Lunes a Viernes: 8:00 AM - 4:00 PM / Sábados: 8:00 AM - 12:00 MD');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t7', 'Jefatura Metropolitana de Tránsito', 'San Pedro Sula', 'Boulevard del Sur, contiguo a Monumento a la Madre.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t8', 'Secretaría de Recursos Naturales (MiAmbiente)', 'Tegucigalpa', '100 metros al sur del Estadio Nacional, Edificio Principal.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t9', 'Registro Nacional de las Personas (Sede Central)', 'Tegucigalpa', 'Bulevar Centroamérica, Edificio IPM.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t9', 'Auxiliatura RNP Hospital Materno Infantil', 'Tegucigalpa', 'Interior del Hospital Escuela, Área de Maternidad.', 'Lunes a Domingo: 7:00 AM - 7:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t9', 'RNP Oficina Regional San Pedro Sula', 'San Pedro Sula', 'Colonia Los Castaños, Boulevard del Norte.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t11', 'Secretaría de Educación - Ventanilla de Auténticas', 'Tegucigalpa', 'Centro Cívico Gubernamental, Torre 1, Piso 1.', 'Lunes a Viernes: 8:00 AM - 3:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t12', 'Instituto de la Propiedad (Registro Vehicular)', 'Tegucigalpa', 'Centro Cívico Gubernamental, Edificio Cuerpo Bajo B.', 'Lunes a Viernes: 8:00 AM - 4:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t12', 'Inspección de Vehículos DPI', 'Tegucigalpa', 'Instalaciones DPI Colonia Kennedy, contiguo a UMEP 4.', 'Lunes a Viernes: 7:00 AM - 3:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t14', 'Edificio Administrativo IHSS (Pensiones)', 'Tegucigalpa', 'Barrio Abajo, frente a Museo para la Identidad Nacional.', 'Lunes a Viernes: 7:00 AM - 3:00 PM');
+INSERT INTO tramite_lugares (tramite_id, nombre, ciudad, direccion, horario) VALUES ('t14', 'Edificio Administrativo IHSS (Norte)', 'San Pedro Sula', 'Colonia Tepeaca, Boulevard del Norte.', 'Lunes a Viernes: 7:00 AM - 3:00 PM');
+
+-- Inserción de Plantillas
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t1', 'Guía de Programación de Cita (Manual Usuario)', 'PDF', '1.2 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t1', 'Formulario de Autorización (Para Menores de Edad)', 'PDF', '450 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t2', 'Instructivo Paso a Paso', 'PDF', '2.5 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t3', 'Modelo de Escritura de Constitución (S. de R.L.)', 'DOCX', '45 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t3', 'Clasificador de Actividades Económicas (CIIU)', 'PDF', '3.1 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t4', 'Reglamento de Zonificación y Avalúos', 'PDF', '5.6 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t4', 'Solicitud de Re-evalúo Catastral', 'PDF', '150 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t5', 'Formato de Declaración de Ingresos No Formales', 'PDF', '350 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t5', 'Guía del Becario', 'PDF', '2.1 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t6', 'Formulario de Inscripción Patronal/Trabajador (D-1)', 'PDF', '800 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t6', 'Cuadro de Beneficios y Coberturas Médicas', 'PDF', '1.5 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t7', 'Tabla de Costos por Categoría y Vigencia', 'PDF', '400 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t7', 'Formato para Renovación a Ciudadanos en el Extranjero', 'PDF', '750 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t8', 'Formulario SINEA Oficial (F-01)', 'XLSX', '1.2 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t8', 'Términos de Referencia Generales para EsIA', 'PDF', '3.5 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t8', 'Tabla de Categorización de Proyectos', 'PDF', '5.2 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t9', 'Guía para Trámite de Reconocimiento Voluntario', 'PDF', '400 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t9', 'Información sobre Inscripción Tardía (> 6 meses)', 'PDF', '850 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t10', 'Formulario de Declaración Jurada de Ingresos (F-02)', 'PDF', '1.1 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t10', 'Requisitos para Inspección de Bomberos', 'PDF', '500 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t10', 'Calendario de Vencimientos Tributarios', 'PDF', '2.5 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t11', 'Guía de Generación de Recibo TGR para Educación', 'PDF', '1.8 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t11', 'Directorio de Direcciones Departamentales', 'PDF', '800 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t12', 'Formulario de Trámites Vehiculares RV-01', 'PDF', '900 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t12', 'Información y Requisitos Revisión DPI', 'PDF', '400 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t13', 'Manual de Usuario - Oficina Virtual SAR (Módulo Registro)', 'PDF', '6.5 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t13', 'Tabla de Sanciones por Incumplimiento de Deberes Formales', 'PDF', '2.1 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t14', 'Formulario de Solicitud de Pensión (IVM-05)', 'PDF', '1.2 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t14', 'Hoja de Requisitos Completos y Documentación', 'PDF', '800 KB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t14', 'Guía sobre Retiros Anticipados', 'PDF', '2.4 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t15', 'Manual de Consulta de Saldos (AER)', 'PDF', '3.3 MB', '#');
+INSERT INTO tramite_plantillas (tramite_id, nombre, formato, tamano, url) VALUES ('t15', 'Información sobre Prescripción de Deudas', 'PDF', '1.5 MB', '#');
+
+-- Inserción de Trámites Relacionados
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t1', 't9');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t1', 't2');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t2', 't1');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t2', 't3');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t2', 't14');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t3', 't10');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t3', 't13');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t3', 't6');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t4', 't15');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t4', 't10');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t5', 't11');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t5', 't2');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t6', 't14');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t6', 't9');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t7', 't12');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t7', 't2');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t8', 't10');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t8', 't3');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t9', 't1');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t9', 't6');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t10', 't3');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t10', 't4');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t10', 't15');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t10', 't13');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t11', 't5');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t12', 't7');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t13', 't3');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t13', 't10');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t14', 't6');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t14', 't2');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t15', 't4');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t15', 't10');
+INSERT INTO tramite_relacionados (tramite_id, tramite_relacionado_id) VALUES ('t15', 't3');
+

@@ -39,14 +39,12 @@ Sigue estos pasos para correr la plataforma completa (Frontend + Backend) en tu 
    - Una instancia de **SQL Server** (por ejemplo, SQL Server Express) corriendo localmente.
 
 2. **Configurar la Base de Datos:**
-   - Crea una base de datos llamada `VentanillaDigital`.
-   - Asegúrate de tener un usuario de SQL Server creado (por defecto la aplicación buscará un usuario llamado `ventanilla_user` y contraseña `Ventanilla123!`, con permisos `db_owner` sobre la base de datos).
+   - Crea una base de datos llamada `VentanillaDigital` en tu servidor SQL local.
+   - Ejecuta el script `src/Scriptbs.txt` para crear las tablas e insertar los datos de prueba.
 
 3. **Variables de Entorno:**
-   - En la carpeta `server/`, verifica o modifica el archivo `.env` para que coincida con tus credenciales de base de datos:
+   - En la carpeta `server/`, verifica o modifica el archivo `.env` para que coincida con tu instancia local de SQL:
      ```env
-     DB_USER=ventanilla_user
-     DB_PASSWORD=Ventanilla123!
      DB_SERVER=localhost\SQLEXPRESS
      DB_NAME=VentanillaDigital
      PORT=3001
