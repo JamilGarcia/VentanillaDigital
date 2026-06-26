@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { categorias } from '../mockData';
+import { getCategorias } from '../services/api';
 import { 
   HeartPulse, GraduationCap, CreditCard, Contact, 
   Building2, Home, Car, Leaf, ChevronRight,
-  FolderOpen, ArrowRight, Layers, LayoutGrid, List
+  FolderOpen, ArrowRight, Layers, LayoutGrid, List,
+  Loader2
 } from 'lucide-react';
 import '../service-detail.css';
 
@@ -49,9 +50,31 @@ const generateMockTemas = (categoryId, categoryName) => {
 export default function ServiceDetail() {
   const { id } = useParams();
   const [activeProposal, setActiveProposal] = useState(1);
+  const [categoria, setCategoria] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Buscar la categoría por ID
-  const categoria = categorias.find(c => c.id === id);
+  useEffect(() => {
+    const fetchCategoria = async () => {
+      try {
+        const data = await getCategorias();
+        const found = data.find(c => c.id === id);
+        setCategoria(found);
+      } catch (error) {
+        console.error("Error al cargar categoría:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategoria();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: 'var(--primary-color)' }}>
+        <Loader2 className="spinning" size={48} />
+      </div>
+    );
+  }
 
   if (!categoria) {
     return (

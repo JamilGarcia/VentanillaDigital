@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Clock, CreditCard, Building, ArrowUpRight } from 'lucide-react';
-import { categorias, instituciones } from '../mockData';
+import { Search, Filter, Clock, CreditCard, Building, ArrowRight, Grid, UserCheck, Shield, ChevronRight, ArrowUpRight } from 'lucide-react';
 import ModalidadBadge from '../components/ModalidadBadge';
+import InfoBubble from '../components/InfoBubble';
 
 export default function CatalogProposal3({
   searchTerm, setSearchTerm,
@@ -11,7 +11,8 @@ export default function CatalogProposal3({
   filteredTramites,
   totalResults,
   searchParams, setSearchParams,
-  clearFilters, hasFilters
+  clearFilters, hasFilters,
+  categorias, instituciones
 }) {
   return (
     <div className="catalog-proposal-3">

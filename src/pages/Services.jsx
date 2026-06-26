@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { categorias, tramites } from '../mockData';
+import { getCategorias, getTramites } from '../services/api';
 import { 
   HeartPulse, 
   GraduationCap, 
@@ -13,7 +13,8 @@ import {
   ArrowRight,
   ChevronRight,
   FileText,
-  Layers
+  Layers,
+  Loader2
 } from 'lucide-react';
 import '../services.css';
 
@@ -34,17 +35,46 @@ const getIcon = (iconName, size = 24) => {
 
 export default function Services() {
   const [activeProposal, setActiveProposal] = useState(1);
+  const [categorias, setCategorias] = useState([]);
+  const [tramites, setTramites] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [cats, trams] = await Promise.all([
+          getCategorias(),
+          getTramites()
+        ]);
+        setCategorias(cats);
+        setTramites(trams);
+      } catch (error) {
+        console.error("Error al cargar datos de servicios:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const getCategoryDescription = (name) => {
     return `Explora todos los trámites y servicios disponibles en el área de ${name}. Encuentra lo que necesitas de forma rápida y segura.`;
   };
 
   const getStats = (categoryId) => {
-    const tramitesCount = tramites.filter(t => t.categoriaId === categoryId).length;
+    const tramitesCount = tramites.filter(t => t.categoria_id === categoryId || t.categoriaId === categoryId).length;
     // Mocking topics based on tramites
     const temasCount = Math.max(1, Math.ceil(tramitesCount / 1.5));
     return { tramitesCount, temasCount };
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: 'var(--primary-color)' }}>
+        <Loader2 className="spinning" size={48} />
+      </div>
+    );
+  }
 
   return (
     <div className="services-page">

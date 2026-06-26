@@ -1,7 +1,7 @@
-import React from 'react';
-import { Search, ChevronRight, Zap, ShieldCheck, Lock, Globe, Building, HeartPulse, GraduationCap, CreditCard, Contact, Building2, Home as HomeIcon, Car, Leaf } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ChevronRight, Zap, ShieldCheck, Lock, Globe, Building, HeartPulse, GraduationCap, CreditCard, Contact, Building2, Home as HomeIcon, Car, Leaf, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { categorias, tramites } from '../mockData';
+import { getCategorias, getTramites } from '../services/api';
 
 const IconMap = {
   HeartPulse, GraduationCap, CreditCard, Contact, Building2, Home: HomeIcon, Car, Leaf
@@ -9,7 +9,27 @@ const IconMap = {
 
 export default function Home() {
   const navigate = useNavigate();
-  const tramitesPopulares = tramites.filter(t => t.popular).slice(0, 4);
+  const [categorias, setCategorias] = useState([]);
+  const [tramitesPopulares, setTramitesPopulares] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [catsData, tramitesData] = await Promise.all([
+          getCategorias(),
+          getTramites()
+        ]);
+        setCategorias(catsData);
+        setTramitesPopulares(tramitesData.filter(t => t.popular).slice(0, 4));
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="home-page">
@@ -62,44 +82,52 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="categories-section">
-        <div className="section-header">
-          <h2>Categorías Principales</h2>
-          <button className="btn-link" onClick={() => navigate('/catalog')}>Ver todas <ChevronRight size={16}/></button>
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem', color: 'var(--primary-color)' }}>
+          <Loader2 className="spinning" size={48} />
         </div>
-        <div className="categories-grid">
-          {categorias.slice(0, 4).map(cat => {
-            const IconComponent = IconMap[cat.icon];
-            return (
-              <div key={cat.id} className="category-card" onClick={() => navigate('/catalog?category=' + cat.id)}>
-                <div className="category-icon-wrapper">
-                  {IconComponent ? <IconComponent size={24} /> : <span className="icon-placeholder">{cat.name.charAt(0)}</span>}
-                </div>
-                <h3>{cat.name}</h3>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="popular-section">
-        <h2>Trámites más solicitados</h2>
-        <div className="tramites-grid">
-          {tramitesPopulares.map(tramite => (
-            <div key={tramite.id} className="tramite-card">
-              <div className="tramite-card-header">
-                <span className="badge-time">{tramite.tiempoEstimado}</span>
-              </div>
-              <h3 className="tramite-title">{tramite.titulo}</h3>
-              <p className="tramite-desc">{tramite.descripcion}</p>
-              <div className="tramite-footer">
-                <span className="tramite-cost">{tramite.costo}</span>
-                <button className="btn-outline">Ver requisitos</button>
-              </div>
+      ) : (
+        <>
+          <section className="categories-section">
+            <div className="section-header">
+              <h2>Categorías Principales</h2>
+              <button className="btn-link" onClick={() => navigate('/catalog')}>Ver todas <ChevronRight size={16}/></button>
             </div>
-          ))}
-        </div>
-      </section>
+            <div className="categories-grid">
+              {categorias.slice(0, 4).map(cat => {
+                const IconComponent = IconMap[cat.icon];
+                return (
+                  <div key={cat.id} className="category-card" onClick={() => navigate('/catalog?category=' + cat.id)}>
+                    <div className="category-icon-wrapper">
+                      {IconComponent ? <IconComponent size={24} /> : <span className="icon-placeholder">{cat.name.charAt(0)}</span>}
+                    </div>
+                    <h3>{cat.name}</h3>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="popular-section">
+            <h2>Trámites más solicitados</h2>
+            <div className="tramites-grid">
+              {tramitesPopulares.map(tramite => (
+                <div key={tramite.id} className="tramite-card">
+                  <div className="tramite-card-header">
+                    <span className="badge-time">{tramite.tiempoEstimado}</span>
+                  </div>
+                  <h3 className="tramite-title">{tramite.titulo}</h3>
+                  <p className="tramite-desc">{tramite.descripcion}</p>
+                  <div className="tramite-footer">
+                    <span className="tramite-cost">{tramite.costo}</span>
+                    <button className="btn-outline">Ver requisitos</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }
