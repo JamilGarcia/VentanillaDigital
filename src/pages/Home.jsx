@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronRight, Zap, ShieldCheck, Lock, Globe, Building, HeartPulse, GraduationCap, CreditCard, Contact, Building2, Home as HomeIcon, Car, Leaf, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getCategorias, getTramites } from '../services/api';
+import { getCategorias, getTramites, getEstadisticas } from '../services/api';
 
 const IconMap = {
   HeartPulse, GraduationCap, CreditCard, Contact, Building2, Home: HomeIcon, Car, Leaf
@@ -17,15 +17,15 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catsData, tramitesData] = await Promise.all([
+        const [catsData, tramitesData, estadisticasData] = await Promise.all([
           getCategorias(),
-          getTramites()
+          getTramites({ popular: true }),
+          getEstadisticas()
         ]);
         setCategorias(catsData);
-        setTramitesPopulares(tramitesData.filter(t => t.popular).slice(0, 4));
-        const digitales = tramitesData.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
-        const presenciales = tramitesData.filter(t => t.modalidad === 'Presencial').length;
-        setStats({ digitales, presenciales });
+        // La API ya retorna filtrados, pero limitamos a 4 en caso de que haya más
+        setTramitesPopulares(tramitesData.slice(0, 4));
+        setStats({ digitales: estadisticasData.digitales, presenciales: estadisticasData.presenciales });
       } catch (error) {
         console.error("Error al cargar datos:", error);
       } finally {

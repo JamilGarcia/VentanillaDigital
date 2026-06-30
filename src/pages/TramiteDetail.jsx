@@ -15,6 +15,9 @@ export default function TramiteDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setLoading(true);
+
     const fetchData = async () => {
       try {
         const [currentTramite, tramitesBasicos, instituciones, categorias] = await Promise.all([
@@ -71,7 +74,13 @@ export default function TramiteDetail() {
   };
 
   return (
-    <div className="tramite-detail-container">
+    <div className="tramite-detail-container" style={{ animation: 'fadeIn 0.4s ease-out' }}>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       {/* Botón de regreso */}
       <Link to="/catalog" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary-light)', textDecoration: 'none', marginBottom: '2rem', fontWeight: '500' }}>
         <ArrowLeft size={18} /> Volver al Catálogo

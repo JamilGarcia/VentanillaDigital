@@ -3,19 +3,32 @@ import { getConnection } from '../db.js';
 export const getTramites = async (req, res) => {
     try {
         const pool = await getConnection();
+        const request = pool.request();
         
-        // 1. Obtener la información básica de todos los trámites
-        const tramitesResult = await pool.request().query(`
+        let baseQuery = `
             SELECT id, titulo, descripcion, categoria_id, institucion_id, 
                    tiempo_estimado, costo, modalidad, popular 
             FROM tramites
-        `);
+            WHERE 1=1
+        `;
+
+        if (req.query.popular === 'true') {
+            baseQuery += ` AND popular = 1`;
+        }
+
+        if (req.query.categoriaId) {
+            baseQuery += ` AND categoria_id = @categoriaId`;
+            request.input('categoriaId', req.query.categoriaId);
+        }
+
+        // 1. Obtener la información básica de los trámites
+        const tramitesResult = await request.query(baseQuery);
         
         // 2. Obtener SOLO la información mínima de pasos necesaria para el catálogo (para ModalidadBadge)
-        const pasosResult = await pool.request().query(`
-            SELECT tramite_id, titulo, modalidad 
-            FROM tramite_pasos
-        `);
+        // Para evitar traer pasos de trámites que no se consultaron, filtramos si es necesario o traemos todos. 
+        // Como son pocos pasos en la DB, es ligero traer todos, pero optimicemos si hay filtros.
+        let pasosQuery = `SELECT tramite_id, titulo, modalidad FROM tramite_pasos`;
+        const pasosResult = await pool.request().query(pasosQuery);
         
         // Transformar la data para el listado del catálogo
         const tramites = tramitesResult.recordset.map(t => ({

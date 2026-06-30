@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getCategorias, getTramites } from '../services/api';
+import { getCategorias } from '../services/api';
 import { 
   HeartPulse, 
   GraduationCap, 
@@ -35,18 +35,13 @@ const getIcon = (iconName, size = 24) => {
 
 export default function Services() {
   const [categorias, setCategorias] = useState([]);
-  const [tramites, setTramites] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cats, trams] = await Promise.all([
-          getCategorias(),
-          getTramites()
-        ]);
+        const cats = await getCategorias();
         setCategorias(cats);
-        setTramites(trams);
       } catch (error) {
         console.error("Error al cargar datos de servicios:", error);
       } finally {
@@ -60,8 +55,8 @@ export default function Services() {
     return `Explora todos los trámites y servicios disponibles en el área de ${name}. Encuentra lo que necesitas de forma rápida y segura.`;
   };
 
-  const getStats = (categoryId) => {
-    const tramitesCount = tramites.filter(t => t.categoria_id === categoryId || t.categoriaId === categoryId).length;
+  const getStats = (cat) => {
+    const tramitesCount = cat.tramitesCount || 0;
     // Mocking topics based on tramites
     const temasCount = Math.max(1, Math.ceil(tramitesCount / 1.5));
     return { tramitesCount, temasCount };
@@ -84,7 +79,7 @@ export default function Services() {
 
       <div className="services-prop-1">
         {categorias.map(cat => {
-          const { tramitesCount, temasCount } = getStats(cat.id);
+          const { tramitesCount, temasCount } = getStats(cat);
           return (
             <Link to={`/servicios/${cat.id}`} key={cat.id} className="bento-card">
               <div className="bento-icon-wrapper">

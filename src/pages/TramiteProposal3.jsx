@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, CreditCard, Building, PlayCircle, CheckCircle2, ArrowUpRight, Workflow, MapPin, Image as ImageIcon, Download, Landmark } from 'lucide-react';
+import { Clock, CreditCard, Building, PlayCircle, CheckCircle2, ArrowUpRight, Workflow, MapPin, Image as ImageIcon, Download, Landmark, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ModalidadBadge from '../components/ModalidadBadge';
 
@@ -35,7 +35,31 @@ export default function TramiteProposal3({ tramite, institucion, categoria, rela
             </div>
           </div>
 
-          {tramite.modalidad !== 'Presencial' && (
+          {tramite.modalidad === 'Presencial' ? (
+            <div style={{ marginTop: '2.5rem', display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem' }}>
+              <button 
+                disabled 
+                style={{ 
+                  padding: '1.2rem 3rem', 
+                  fontSize: '1.2rem', 
+                  borderRadius: '50px', 
+                  display: 'inline-flex', 
+                  gap: '0.8rem', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                  color: 'rgba(255, 255, 255, 0.4)', 
+                  cursor: 'not-allowed', 
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                <PlayCircle size={24} /> Empezar Trámite
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '500', background: 'rgba(0,0,0,0.3)', padding: '0.4rem 1rem', borderRadius: '20px', backdropFilter: 'blur(5px)' }}>
+                <Info size={16} />
+                Este trámite se realiza de forma presencial
+              </div>
+            </div>
+          ) : (
             <button className="btn-primary" style={{ marginTop: '2.5rem', padding: '1.2rem 3rem', fontSize: '1.2rem', borderRadius: '50px', display: 'inline-flex', gap: '0.8rem', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }}>
               <PlayCircle size={24} /> Empezar Trámite
             </button>
@@ -66,7 +90,7 @@ export default function TramiteProposal3({ tramite, institucion, categoria, rela
                       <span style={{ color: 'var(--text-main-light)', fontSize: '0.95rem' }}>{text}</span>
                     </div>
                     {sampleUrl && (
-                      <a href={sampleUrl} target="_blank" rel="noreferrer" style={{ marginLeft: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--primary-color)', background: 'white', padding: '0.4rem 0.8rem', borderRadius: '20px', textDecoration: 'none', width: 'fit-content', boxShadow: 'var(--shadow-sm)' }}>
+                      <a href={sampleUrl} target="_blank" rel="noreferrer" style={{ marginLeft: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--primary-color)', background: 'var(--bg-card-light)', padding: '0.4rem 0.8rem', borderRadius: '20px', textDecoration: 'none', width: 'fit-content', boxShadow: 'var(--shadow-sm)' }}>
                         <ImageIcon size={16} /> Ver Muestra
                       </a>
                     )}
@@ -81,7 +105,7 @@ export default function TramiteProposal3({ tramite, institucion, categoria, rela
 
         {/* Institución */}
         <div className="p3-bento-box" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', background: 'linear-gradient(to bottom, var(--bg-card-light), var(--bg-hover-light))' }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', marginBottom: '1.5rem' }}>
+          <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-main)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)', marginBottom: '1.5rem' }}>
             <Building size={40} color="var(--primary-color)" />
           </div>
           <h3 style={{ margin: '0 0 0.5rem 0' }}>{institucion?.name}</h3>
@@ -234,7 +258,7 @@ export default function TramiteProposal3({ tramite, institucion, categoria, rela
             <p style={{ color: 'var(--text-secondary-light)', marginBottom: '1.5rem' }}>Descarga los documentos necesarios para este trámite.</p>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               {tramite.plantillas.map((plantilla, idx) => (
-                <a key={idx} href={plantilla.url} target="_blank" rel="noreferrer" style={{ flex: '1 1 300px', padding: '1rem 1.5rem', background: 'white', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: 'inherit', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)', transition: 'all 0.2s ease' }} className="p3-template-card">
+                <a key={idx} href={plantilla.url} target="_blank" rel="noreferrer" style={{ flex: '1 1 300px', padding: '1rem 1.5rem', background: 'var(--bg-main)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: 'inherit', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)', transition: 'all 0.2s ease' }} className="p3-template-card">
                   <div>
                     <h4 style={{ margin: '0 0 0.3rem 0', color: 'var(--text-main-light)' }}>{plantilla.nombre}</h4>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary-light)' }}>{plantilla.formato} • {plantilla.tamano}</span>

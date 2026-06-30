@@ -16,8 +16,10 @@ export const getInstituciones = async () => {
     return response.json();
 };
 
-export const getTramites = async () => {
-    const response = await fetch(`${API_URL}/tramites`);
+export const getTramites = async (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    const url = query ? `${API_URL}/tramites?${query}` : `${API_URL}/tramites`;
+    const response = await fetch(url);
     if (!response.ok) {
         throw new Error('Error al obtener trámites');
     }
@@ -28,6 +30,14 @@ export const getTramiteById = async (id) => {
     const response = await fetch(`${API_URL}/tramites/${id}`);
     if (!response.ok) {
         throw new Error('Error al obtener el trámite');
+    }
+    return response.json();
+};
+
+export const getEstadisticas = async () => {
+    const response = await fetch(`${API_URL}/estadisticas`);
+    if (!response.ok) {
+        throw new Error('Error al obtener estadísticas');
     }
     return response.json();
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Building, Heart, ExternalLink, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getInstituciones, getTramites } from '../services/api';
+import { getInstituciones } from '../services/api';
 
 export default function Institutions() {
   const navigate = useNavigate();
@@ -28,28 +28,22 @@ export default function Institutions() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [instData, tramData] = await Promise.all([
-          getInstituciones(),
-          getTramites()
-        ]);
+        const instData = await getInstituciones();
 
-        const globalTotal = tramData.length;
-        const globalOnline = tramData.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
-        const globalPres = tramData.filter(t => t.modalidad === 'Presencial').length;
+        let globalTotal = 0;
+        let globalOnline = 0;
+        let globalPres = 0;
 
-        setGlobalStats({ total: globalTotal, online: globalOnline, presencial: globalPres });
-
-        const enrichedInst = instData.map(inst => {
-          const instTramites = tramData.filter(t => t.institucion_id === inst.id || t.institucionId === inst.id);
-          const total = instTramites.length;
-          const online = instTramites.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
-          const presencial = instTramites.filter(t => t.modalidad === 'Presencial').length;
-          return { ...inst, total, online, presencial };
+        instData.forEach(inst => {
+          globalTotal += inst.total || 0;
+          globalOnline += inst.online || 0;
+          globalPres += inst.presencial || 0;
         });
 
-        setInstituciones(enrichedInst);
+        setGlobalStats({ total: globalTotal, online: globalOnline, presencial: globalPres });
+        setInstituciones(instData);
       } catch (error) {
-        console.error("Error al cargar instituciones y trámites:", error);
+        console.error("Error al cargar instituciones:", error);
       } finally {
         setLoading(false);
       }

@@ -34,13 +34,12 @@ export default function ServiceDetail() {
       try {
         const [catsData, tramsData] = await Promise.all([
           getCategorias(),
-          getTramites()
+          getTramites({ categoriaId: id })
         ]);
         const found = catsData.find(c => c.id === id);
         setCategoria(found);
         if (found) {
-          const filtrados = tramsData.filter(t => t.categoria_id === id || t.categoriaId === id);
-          setTramitesCategoria(filtrados);
+          setTramitesCategoria(tramsData);
         }
       } catch (error) {
         console.error("Error al cargar categoría y trámites:", error);
