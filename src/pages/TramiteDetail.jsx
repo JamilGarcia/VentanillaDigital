@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getTramites, getInstituciones, getCategorias } from '../services/api';
+import { getTramiteById, getTramites, getInstituciones, getCategorias } from '../services/api';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 import TramiteProposal3 from './TramiteProposal3';
@@ -17,23 +17,23 @@ export default function TramiteDetail() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [tramites, instituciones, categorias] = await Promise.all([
+        const [currentTramite, tramitesBasicos, instituciones, categorias] = await Promise.all([
+          getTramiteById(id),
           getTramites(),
           getInstituciones(),
           getCategorias()
         ]);
 
-        const currentTramite = tramites.find(t => t.id === id);
         if (currentTramite) {
           setTramite(currentTramite);
           setInstitucion(instituciones.find(i => i.id === currentTramite.institucion_id || i.id === currentTramite.institucionId));
           setCategoria(categorias.find(c => c.id === currentTramite.categoria_id || c.id === currentTramite.categoriaId));
           
-          // Trámites relacionados (si es que los hay en la estructura de la base de datos o como JSON)
-          // Para este prototipo, podemos usar los IDs mockeados temporalmente si no están en DB.
-          // Como la tabla actual no tiene tramitesRelacionados por defecto, dejaremos array vacío.
-          // En una implementación completa se haría un JOIN a una tabla tramite_relacionados.
-          setRelacionados([]); 
+          if (currentTramite.tramitesRelacionados && currentTramite.tramitesRelacionados.length > 0) {
+            setRelacionados(tramitesBasicos.filter(t => currentTramite.tramitesRelacionados.includes(t.id)));
+          } else {
+            setRelacionados([]);
+          } 
         }
       } catch (error) {
         console.error("Error al cargar detalle del trámite:", error);

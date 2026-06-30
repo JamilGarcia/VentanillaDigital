@@ -11,6 +11,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [categorias, setCategorias] = useState([]);
   const [tramitesPopulares, setTramitesPopulares] = useState([]);
+  const [stats, setStats] = useState({ digitales: 0, presenciales: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,6 +23,9 @@ export default function Home() {
         ]);
         setCategorias(catsData);
         setTramitesPopulares(tramitesData.filter(t => t.popular).slice(0, 4));
+        const digitales = tramitesData.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
+        const presenciales = tramitesData.filter(t => t.modalidad === 'Presencial').length;
+        setStats({ digitales, presenciales });
       } catch (error) {
         console.error("Error al cargar datos:", error);
       } finally {
@@ -66,7 +70,7 @@ export default function Home() {
           <div className="metric-card digital">
             <Globe className="metric-icon" size={32} />
             <div className="metric-info">
-              <h2>180</h2>
+              <h2>{stats.digitales}</h2>
               <p>DIGITALES</p>
             </div>
             <p className="metric-desc">Hazlos todos desde la comodidad de tu casa, las 24 horas del día.</p>
@@ -74,7 +78,7 @@ export default function Home() {
           <div className="metric-card presencial">
             <Building className="metric-icon" size={32} />
             <div className="metric-info">
-              <h2>120</h2>
+              <h2>{stats.presenciales}</h2>
               <p>PRESENCIALES</p>
             </div>
             <p className="metric-desc">Agenda tu cita aquí y sáltate las enormes filas en oficina.</p>
@@ -91,13 +95,13 @@ export default function Home() {
           <section className="categories-section">
             <div className="section-header">
               <h2>Categorías Principales</h2>
-              <button className="btn-link" onClick={() => navigate('/catalog')}>Ver todas <ChevronRight size={16}/></button>
+              <button className="btn-link" onClick={() => navigate('/servicios')}>Ver todas <ChevronRight size={16}/></button>
             </div>
             <div className="categories-grid">
               {categorias.slice(0, 4).map(cat => {
                 const IconComponent = IconMap[cat.icon];
                 return (
-                  <div key={cat.id} className="category-card" onClick={() => navigate('/catalog?category=' + cat.id)}>
+                  <div key={cat.id} className="category-card" onClick={() => navigate('/servicios/' + cat.id)}>
                     <div className="category-icon-wrapper">
                       {IconComponent ? <IconComponent size={24} /> : <span className="icon-placeholder">{cat.name.charAt(0)}</span>}
                     </div>
@@ -120,7 +124,7 @@ export default function Home() {
                   <p className="tramite-desc">{tramite.descripcion}</p>
                   <div className="tramite-footer">
                     <span className="tramite-cost">{tramite.costo}</span>
-                    <button className="btn-outline">Ver requisitos</button>
+                    <button className="btn-outline" onClick={() => navigate('/tramites/' + tramite.id)}>Ver requisitos</button>
                   </div>
                 </div>
               ))}

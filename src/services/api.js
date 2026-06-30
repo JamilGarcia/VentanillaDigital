@@ -23,3 +23,11 @@ export const getTramites = async () => {
     }
     return response.json();
 };
+
+export const getTramiteById = async (id) => {
+    const response = await fetch(`${API_URL}/tramites/${id}`);
+    if (!response.ok) {
+        throw new Error('Error al obtener el trámite');
+    }
+    return response.json();
+};

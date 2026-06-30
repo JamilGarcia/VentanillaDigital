@@ -1,3 +1,17 @@
+/**
+ * ARCHIVO DE CONTEXTO Y GENERACIÓN DE DATOS (BD)
+ * 
+ * Este archivo contiene la información maestra para inicializar la base de datos de Ventanilla Digital.
+ * La estructura aquí reflejada alimenta al script 'generate_sql.js' para crear todas las tablas
+ * e insertar los registros de:
+ * - Categorías e Instituciones.
+ * - Trámites (con su info básica, modalidades y costos).
+ * - Requisitos y Pasos de trámites.
+ * - Lugares de atención presencial, Plantillas descargables y Trámites Relacionados.
+ * 
+ * Si se requiere agregar nueva data a la BD, se debe modificar este archivo y luego ejecutar:
+ * `node generate_sql.js`
+ */
 export const categorias = [
     { id: '1', name: 'Salud y Seguridad Social', icon: 'HeartPulse' },
     { id: '2', name: 'Educación y Cultura', icon: 'GraduationCap' },

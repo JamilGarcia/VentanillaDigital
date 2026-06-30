@@ -54,10 +54,35 @@ Flujo secuencial de acciones que el usuario debe realizar para completar el trá
 - `descripcion` (TEXT): Detalles del paso.
 - `dependencia` (VARCHAR(150), NULL): Lugar físico o digital donde se realiza.
 - `modalidad` (VARCHAR(50), NULL): 'Virtual' o 'Presencial' específicamente para este paso.
+- `tiempo` (VARCHAR(50), NULL): Tiempo estimado para este paso en particular.
+- `requisito` (VARCHAR(255), NULL): Requisito específico necesario para realizar el paso.
+
+### 6. `tramite_lugares`
+Ubicaciones físicas donde se puede llevar a cabo el trámite o paso presencial.
+- `id` (INT IDENTITY, PRIMARY KEY): ID autoincremental.
+- `tramite_id` (VARCHAR(10), FOREIGN KEY): Referencia a `tramites.id`.
+- `nombre` (VARCHAR(150)): Nombre del lugar o sucursal.
+- `ciudad` (VARCHAR(100)): Ciudad de la ubicación.
+- `direccion` (TEXT): Dirección física exacta.
+- `horario` (VARCHAR(100)): Horario de atención al público.
+
+### 7. `tramite_plantillas`
+Formatos descargables y documentos de ayuda para realizar el trámite.
+- `id` (INT IDENTITY, PRIMARY KEY): ID autoincremental.
+- `tramite_id` (VARCHAR(10), FOREIGN KEY): Referencia a `tramites.id`.
+- `nombre` (VARCHAR(150)): Nombre o descripción del documento.
+- `formato` (VARCHAR(50)): Tipo de archivo (PDF, DOCX, etc.).
+- `tamano` (VARCHAR(50)): Tamaño del archivo (ej. 1.2 MB).
+- `url` (VARCHAR(255)): Enlace para descargar la plantilla.
+
+### 8. `tramite_relacionados`
+Asociaciones entre trámites que suelen realizarse juntos o son dependientes.
+- `tramite_id` (VARCHAR(10), FOREIGN KEY): Referencia a `tramites.id`.
+- `tramite_relacionado_id` (VARCHAR(10), FOREIGN KEY): Referencia al trámite asociado en `tramites.id`.
 
 ## Consideraciones de Arquitectura Actuales
 
 1. **Agrupación en el Backend:** 
-   El endpoint `GET /api/tramites` de nuestro backend (Node.js) hace queries a las tablas `tramites`, `tramite_requisitos` y `tramite_pasos`, y las mapea en memoria para devolver un JSON anidado al Frontend.
+   El endpoint `GET /api/tramites` de nuestro backend (Node.js) hace queries a las tablas relacionadas y las mapea en memoria para devolver un JSON anidado al Frontend.
 2. **Booleanos en SQL Server:** 
    La columna `popular` es de tipo `BIT`. Al procesarse en Node.js, se mapea manualmente a `true` o `false`.

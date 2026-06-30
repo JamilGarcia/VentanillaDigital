@@ -1,31 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Building, Heart, ExternalLink, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getInstituciones } from '../services/api';
+import { getInstituciones, getTramites } from '../services/api';
 
 export default function Institutions() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [instituciones, setInstituciones] = useState([]);
+  const [globalStats, setGlobalStats] = useState({ total: 0, online: 0, presencial: 0 });
   const [loading, setLoading] = useState(true);
 
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem('instFavorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
-    const fetchInstituciones = async () => {
+    localStorage.setItem('instFavorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (id) => {
+    setFavorites(prev => 
+      prev.includes(id) ? prev.filter(fId => fId !== id) : [...prev, id]
+    );
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const data = await getInstituciones();
-        setInstituciones(data);
+        const [instData, tramData] = await Promise.all([
+          getInstituciones(),
+          getTramites()
+        ]);
+
+        const globalTotal = tramData.length;
+        const globalOnline = tramData.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
+        const globalPres = tramData.filter(t => t.modalidad === 'Presencial').length;
+
+        setGlobalStats({ total: globalTotal, online: globalOnline, presencial: globalPres });
+
+        const enrichedInst = instData.map(inst => {
+          const instTramites = tramData.filter(t => t.institucion_id === inst.id || t.institucionId === inst.id);
+          const total = instTramites.length;
+          const online = instTramites.filter(t => ['Virtual', 'Híbrido'].includes(t.modalidad)).length;
+          const presencial = instTramites.filter(t => t.modalidad === 'Presencial').length;
+          return { ...inst, total, online, presencial };
+        });
+
+        setInstituciones(enrichedInst);
       } catch (error) {
-        console.error("Error al cargar instituciones:", error);
+        console.error("Error al cargar instituciones y trámites:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchInstituciones();
+    fetchData();
   }, []);
 
-  const filteredInst = instituciones.filter(inst => 
-    inst.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredInst = instituciones
+    .filter(inst => inst.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      const aFav = favorites.includes(a.id);
+      const bFav = favorites.includes(b.id);
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      return 0;
+    });
 
   return (
     <div className="institutions-page">
@@ -41,17 +81,17 @@ export default function Institutions() {
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
-          <h2>300</h2>
+          <h2>{globalStats.total}</h2>
           <p>TRÁMITES TOTALES</p>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item highlighted">
-          <h2>180</h2>
+          <h2>{globalStats.online}</h2>
           <p>EN LÍNEA</p>
         </div>
         <div className="stat-divider"></div>
         <div className="stat-item">
-          <h2>120</h2>
+          <h2>{globalStats.presencial}</h2>
           <p>PRESENCIALES</p>
         </div>
       </div>
@@ -109,8 +149,16 @@ export default function Institutions() {
                 >
                   <ExternalLink size={16} style={{marginRight: '6px'}}/> Ver Trámites
                 </button>
-                <button className="btn-icon-outline">
-                  <Heart size={20} />
+                <button 
+                  className={`btn-icon-outline ${favorites.includes(inst.id) ? 'active' : ''}`}
+                  onClick={() => toggleFavorite(inst.id)}
+                  title={favorites.includes(inst.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                >
+                  <Heart 
+                    size={20} 
+                    fill={favorites.includes(inst.id) ? "var(--primary-color)" : "none"}
+                    color={favorites.includes(inst.id) ? "var(--primary-color)" : "currentColor"}
+                  />
                 </button>
               </div>
             </div>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getCategorias } from '../services/api';
+import { getCategorias, getTramites } from '../services/api';
 import { 
   HeartPulse, GraduationCap, CreditCard, Contact, 
   Building2, Home, Car, Leaf, ChevronRight,
-  FolderOpen, ArrowRight, Layers, LayoutGrid, List,
-  Loader2
+  FolderOpen, ArrowRight, Loader2
 } from 'lucide-react';
 import '../service-detail.css';
 
@@ -24,48 +23,32 @@ const getCategoryIcon = (iconName, size = 40) => {
   return icons[iconName] || <FolderOpen size={size} />;
 };
 
-// Generador dinámico de Temas "Mock" basados en el nombre de la categoría
-const generateMockTemas = (categoryId, categoryName) => {
-  const baseTemas = {
-    '1': ['Afiliación y Beneficios', 'Citas Médicas', 'Incapacidades y Permisos'],
-    '2': ['Becas y Ayudas', 'Certificaciones Académicas', 'Registro de Títulos'],
-    '3': ['Declaración de Impuestos', 'Solvencias y Constancias', 'Registro Tributario (RTN)'],
-    '4': ['Pasaportes y Auténticas', 'Documento de Identidad (DNI)', 'Antecedentes Policiales', 'Certificados de Nacimiento'],
-    '5': ['Constitución de Empresas', 'Permisos de Operación', 'Registro Mercantil'],
-    '6': ['Catastro y Avalúos', 'Impuestos de Bienes Inmuebles', 'Registro de Propiedad'],
-    '7': ['Permisos de Conducir', 'Matrícula Vehicular', 'Infracciones y Multas'],
-    '8': ['Licencias Ambientales', 'Denuncias Ecológicas', 'Aprovechamiento Forestal']
-  };
-
-  const list = baseTemas[categoryId] || [`Tema General de ${categoryName}`, `Consultas de ${categoryName}`];
-  
-  return list.map((tema, index) => ({
-    id: `tema-${categoryId}-${index}`,
-    title: tema,
-    description: `Descubre todos los trámites relacionados con ${tema.toLowerCase()}.`,
-    tramitesCount: Math.floor(Math.random() * 8) + 2 // Mock count
-  }));
-};
-
 export default function ServiceDetail() {
   const { id } = useParams();
-  const [activeProposal, setActiveProposal] = useState(1);
   const [categoria, setCategoria] = useState(null);
+  const [tramitesCategoria, setTramitesCategoria] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategoria = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getCategorias();
-        const found = data.find(c => c.id === id);
+        const [catsData, tramsData] = await Promise.all([
+          getCategorias(),
+          getTramites()
+        ]);
+        const found = catsData.find(c => c.id === id);
         setCategoria(found);
+        if (found) {
+          const filtrados = tramsData.filter(t => t.categoria_id === id || t.categoriaId === id);
+          setTramitesCategoria(filtrados);
+        }
       } catch (error) {
-        console.error("Error al cargar categoría:", error);
+        console.error("Error al cargar categoría y trámites:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCategoria();
+    fetchData();
   }, [id]);
 
   if (loading) {
@@ -85,7 +68,7 @@ export default function ServiceDetail() {
     );
   }
 
-  const temas = generateMockTemas(categoria.id, categoria.name);
+
 
   return (
     <div className="service-detail-page">
@@ -109,89 +92,26 @@ export default function ServiceDetail() {
         </div>
       </div>
 
-      {/* Selector de Propuestas */}
-      <div className="proposal-selector">
-        <button 
-          className={`proposal-btn ${activeProposal === 1 ? 'active' : ''}`}
-          onClick={() => setActiveProposal(1)}
-        >
-          <LayoutGrid size={16} style={{ marginRight: 6, verticalAlign: 'text-bottom' }}/> 
-          Propuesta 1 (Carpetas Bento)
-        </button>
-        <button 
-          className={`proposal-btn ${activeProposal === 2 ? 'active' : ''}`}
-          onClick={() => setActiveProposal(2)}
-        >
-          <List size={16} style={{ marginRight: 6, verticalAlign: 'text-bottom' }}/> 
-          Propuesta 2 (Lista Bloques)
-        </button>
-        <button 
-          className={`proposal-btn ${activeProposal === 3 ? 'active' : ''}`}
-          onClick={() => setActiveProposal(3)}
-        >
-          <Layers size={16} style={{ marginRight: 6, verticalAlign: 'text-bottom' }}/> 
-          Propuesta 3 (Tarjetas Glow)
-        </button>
-      </div>
-
       {/* Propuesta 1: Carpetas Bento */}
-      {activeProposal === 1 && (
-        <div className="tema-prop-1">
-          {temas.map(tema => (
-            <Link to={`/catalog?category=${categoria.id}`} key={tema.id} className="folder-card">
+      <div className="tema-prop-1">
+        {tramitesCategoria.length > 0 ? (
+          tramitesCategoria.map(tramite => (
+            <Link to={`/tramites/${tramite.id}`} key={tramite.id} className="folder-card">
               <FolderOpen size={32} className="folder-icon" />
-              <h3>{tema.title}</h3>
-              <p>{tema.description}</p>
+              <h3>{tramite.titulo}</h3>
+              <p>{tramite.descripcion.substring(0, 100)}...</p>
               <div className="folder-footer">
-                <span className="tramites-badge">{tema.tramitesCount} Trámites</span>
-                <span className="folder-action">Explorar <ArrowRight size={16} /></span>
+                <span className="tramites-badge">{tramite.modalidad}</span>
+                <span className="folder-action">Ver Trámite <ArrowRight size={16} /></span>
               </div>
             </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Propuesta 2: Lista Moderna en Bloques */}
-      {activeProposal === 2 && (
-        <div className="tema-prop-2">
-          {temas.map(tema => (
-            <Link to={`/catalog?category=${categoria.id}`} key={tema.id} className="block-row">
-              <div className="block-left">
-                <div className="block-icon">
-                  <Layers size={24} />
-                </div>
-                <div className="block-info">
-                  <h3>{tema.title}</h3>
-                  <p>{tema.description}</p>
-                </div>
-              </div>
-              <div className="block-right">
-                <span className="block-badge">{tema.tramitesCount} Trámites</span>
-                <span className="block-action">Explorar Trámites <ArrowRight size={16} /></span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Propuesta 3: Tarjetas Flotantes Glow */}
-      {activeProposal === 3 && (
-        <div className="tema-prop-3">
-          {temas.map(tema => (
-            <Link to={`/catalog?category=${categoria.id}`} key={tema.id} className="glow-card">
-              <div className="glow-header">
-                <div className="glow-icon">
-                  <Layers size={28} />
-                </div>
-                <div className="glow-count">{tema.tramitesCount}</div>
-              </div>
-              <h3>{tema.title}</h3>
-              <p>{tema.description}</p>
-              <span className="glow-action">Ver trámites de este tema <ArrowRight size={16} /></span>
-            </Link>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-secondary-light)' }}>
+            No hay trámites registrados para esta categoría aún.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

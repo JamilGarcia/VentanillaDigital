@@ -1,3 +1,7 @@
+---
+trigger: manual
+---
+
 # Generación de Datos de Prueba
 
 Cuando se requiera agregar, modificar o generar nuevos datos de prueba para la base de datos de la aplicación Ventanilla Digital, se debe seguir este flujo:
